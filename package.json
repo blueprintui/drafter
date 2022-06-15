@@ -1,11 +1,11 @@
 {
-  "name": "@blueprintui/webpad",
-  "version": "0.0.1",
+  "name": "@blueprintui/drafter",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "webpad": "./src/index.js"
+    "drafter": "./src/index.js"
   },
   "scripts": {
     "start": "npm run clean && node ./src/index.js build && node ./src/index.js build --watch",

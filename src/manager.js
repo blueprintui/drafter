@@ -35,32 +35,37 @@ export function getManagerTemplate(navTemplate, type, module, example) {
 <html lang="en">
   <head>
     ${headTemplate()}
-    <meta name="description" content="${example?.name ?? 'Webpad Examples'}">
+    <meta name="description" content="${example?.name ?? 'Drafter Examples'}">
+    <link href="https://unpkg.com/prismjs/themes/prism.css" rel="stylesheet" />
   </head>
   <body>
     ${navTemplate}
     <header>
       ${type !== 'root' ? /* html */`
       <nav>
-        <a href="/components/${module.metadata.name}/${example.name}.html">Demo</a>
-        <a href="/components/${module.metadata.name}/${example.name}-code.html">Code</a>
-        <a href="/components/${module.metadata.name}/${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen</a>
+        <a href="/components/${module.metadata.name}/${example.name}.html">Demo 📐</a>
+        <a href="/components/${module.metadata.name}/${example.name}-code.html">Code 📘</a>
+        <a href="/components/${module.metadata.name}/${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen ↗️</a>
       </nav>`: ''}
     </header>
     <main>
       ${type === 'frame' ? /* html */`<iframe src="${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log">...</div>` : ''}
       ${type === 'code' ? /* html */`<pre><code class="language-html">${highlightCode(example)}</code></pre>${apiTemplate(module)}` : ''}
     </main>
-    <script type="module">
+    <!-- <script type="module">
       import 'prismjs/themes/prism-tomorrow.min.css';
+    </script> -->
+    <script type="module">
+      const main = document.querySelector('main');
       const actionLog = document.querySelector('.action-log');
-      const broadcastManager = new BroadcastChannel('webpad-manager');
+      const broadcastManager = new BroadcastChannel('drafter-manager');
       broadcastManager.addEventListener('message', message => {
         if (message.data.action === 'log') {
           const div = document.createElement('div');
           div.textContent = message.data.detail.join(' ');
           actionLog.appendChild(div);
           actionLog.scrollTop = actionLog.scrollHeight;
+          main.classList.add('action-log-active');
         }
       });
       broadcastManager.postMessage('manager-ready');
@@ -75,7 +80,7 @@ export function getManagerTemplate(navTemplate, type, module, example) {
 
 function headTemplate() {
   return /* html */`
-    <title>Webpad</title>
+    <title>Drafter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Ctext%20x='0'%20y='14'%3E🚀3C/text%3E%3C/svg%3E" type="image/svg+xml" />
     <style>

@@ -18,6 +18,15 @@ h1, h2, h3, h4 {
   margin: 0 0 18px 0;
 }
 
+a {
+  color: #2d2d2d;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .side-nav {
   width: 320px;
   position: fixed;
@@ -36,12 +45,11 @@ h1, h2, h3, h4 {
 .side-nav a {
   display: block;
   width: 100%;
-  color: #2d2d2d;
 }
 
 .side-nav ul {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-direction: column;
   margin: 0;
   padding: 0;
@@ -68,9 +76,9 @@ header {
 header nav {
   color: #2d2d2d;
   display: flex;
-  gap: 14px;
+  gap: 24px;
   padding: 24px;
-  border-bottom: 1px solid #ccc;
+  box-shadow: 0px 0px 4px hsl(0deg 0% 0% / 20%);
 }
 
 header .full-screen {
@@ -78,12 +86,12 @@ header .full-screen {
 }
 
 main {
-  padding: 12px 24px 12px 342px;
+  padding: 24px 24px 12px 342px;
   height: calc(100vh - 76px);
 }
 
 pre {
-  background: #2d2d2d;
+  background: #fafafa;
   padding: 0;
   overflow: hidden;
   height: fit-content;
@@ -97,9 +105,10 @@ iframe {
   border: 0 none transparent;
   padding: 0;
   overflow: hidden;
-  height: calc(100% - 200px);
+  height: 100%;
   width: 100%;
-  resize: inline;
+  resize: both;
+  box-shadow: 0px 0px 4px hsl(0deg 0% 0% / 20%);
 }
 
 .action-log {
@@ -111,6 +120,15 @@ iframe {
   overscroll-behavior-y: contain;
   scroll-snap-type: y mandatory;
   font-family: monospace;
+  display: none;
+}
+
+.action-log-active .action-log {
+  display: block;
+}
+
+.action-log-active iframe {
+  height: calc(100% - 200px);
 }
 
 table {

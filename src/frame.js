@@ -25,9 +25,8 @@ function getIframeTemplate(project, example, module) {
     ${project.head()}
   </head>
   <body bp-text="body">
-    ${template}
     <script type="module">
-      const broadcastManager = new BroadcastChannel('webpad-manager');
+      const broadcastManager = new BroadcastChannel('drafter-manager');
       broadcastManager.postMessage('frame-ready');
 
       function traceCalls(obj) {
@@ -38,7 +37,9 @@ function getIframeTemplate(project, example, module) {
               let result = origMethod.apply(this, args);
               try {
                 broadcastManager.postMessage({ action: 'log', detail: args });
-              } catch { }
+              } catch {
+                broadcastManager.postMessage({ action: 'log', detail: 'could not serialize' });
+              }
 
               return result;
             };
@@ -49,6 +50,7 @@ function getIframeTemplate(project, example, module) {
 
       window.console = traceCalls(console);
     </script>
+    ${template}
   </body>
 </html>
   `;

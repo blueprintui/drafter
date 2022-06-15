@@ -5,17 +5,17 @@ const cwd = process.cwd();
 export async function getConfig() {
   let userConfig = { };
 
-  if (process.env.WEBPAD_CONFIG !== 'false') {
-    userConfig = await import(process.env.WEBPAD_CONFIG);
+  if (process.env.DRAFTER_CONFIG !== 'false') {
+    userConfig = await import(process.env.DRAFTER_CONFIG);
   }
 
   const config = {
-    dist: './dist/webpad',
+    dist: './dist/drafter',
     schema: null,
     examples: '**/element.examples.js',
     aliases: [],
     head: () => '',
-    ...userConfig.default.webpad
+    ...userConfig.default.drafter
   };
 
   return {

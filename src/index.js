@@ -28,7 +28,7 @@ program
   .option('--prod')
   .description('build library')
   .action(async (options, command) => {
-    process.env.WEBPAD_CONFIG = command.args[0] ? resolve(command.args[0]) : 'false';
+    process.env.DRAFTER_CONFIG = command.args[0] ? resolve(command.args[0]) : 'false';
     project = await getConfig();
     buildStatic(options.watch);
     await buildRollup(!options.watch);
