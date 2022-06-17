@@ -1,7 +1,5 @@
 import fs from 'fs-extra';
 import { resolve } from 'path';
-import Prism from 'prismjs';
-import prettier from 'prettier';
 import { camelCaseToKebabCase } from './utils.js';
 import { styles } from './manager.styles.js';
 
@@ -16,12 +14,12 @@ export function createManager(project, modules) {
   modules.forEach(module => {
     module.examples.forEach(example => {
       example.name = camelCaseToKebabCase(example.name);
-      const examplePath = resolve(project.dist, '_site/components', module.metadata.name, `${example.name}.html`);
+      const examplePath = resolve(project.dist, '_site/components', module.name, `${example.name}.html`);
       const exampleTemplate =  getManagerTemplate(navTemplate, 'frame', module, example);
       fs.createFileSync(examplePath);
       fs.writeFileSync(examplePath, exampleTemplate);
   
-      const codePath = resolve(project.dist, '_site/components', module.metadata.name, `${example.name}-code.html`);
+      const codePath = resolve(project.dist, '_site/components', module.name, `${example.name}-code.html`);
       const codeTemplate = getManagerTemplate(navTemplate, 'code', module, example);
       fs.createFileSync(codePath);
       fs.writeFileSync(codePath, codeTemplate);
@@ -30,31 +28,31 @@ export function createManager(project, modules) {
 }
 
 export function getManagerTemplate(navTemplate, type, module, example) {
+  // <link href="https://unpkg.com/prismjs/themes/prism.css" rel="stylesheet" />
   return /* html */`
 <!doctype html>
 <html lang="en">
   <head>
     ${headTemplate()}
     <meta name="description" content="${example?.name ?? 'Drafter Examples'}">
-    <link href="https://unpkg.com/prismjs/themes/prism.css" rel="stylesheet" />
   </head>
   <body>
     ${navTemplate}
     <header>
       ${type !== 'root' ? /* html */`
       <nav>
-        <a href="/components/${module.metadata.name}/${example.name}.html">Demo 📐</a>
-        <a href="/components/${module.metadata.name}/${example.name}-code.html">Code 📘</a>
-        <a href="/components/${module.metadata.name}/${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen ↗️</a>
+        <a href="/components/${module.name}/${example.name}.html">Demo 📐</a>
+        <a href="/components/${module.name}/${example.name}-code.html">Code 📘</a>
+        <a href="/components/${module.name}/${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen ↗️</a>
       </nav>`: ''}
     </header>
     <main>
       ${type === 'frame' ? /* html */`<iframe src="${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log">...</div>` : ''}
-      ${type === 'code' ? /* html */`<pre><code class="language-html">${highlightCode(example)}</code></pre>${apiTemplate(module)}` : ''}
+      ${type === 'code' ? /* html */`<pre><code class="language-html">${example.formattedSrc}</code></pre>${apiTemplate(module)}` : ''}
     </main>
-    <!-- <script type="module">
-      import 'prismjs/themes/prism-tomorrow.min.css';
-    </script> -->
+    <script type="module">
+      import 'prismjs/themes/prism.min.css';
+    </script>
     <script type="module">
       const main = document.querySelector('main');
       const actionLog = document.querySelector('.action-log');
@@ -93,18 +91,12 @@ function createNav(modules) {
     ${modules.map(module => {
       const sort = (arr, name) => arr.reduce((acc, m) => m.name.includes(name) ? [m, ...acc] : [...acc, m], []);
       const examples = sort(module.examples, 'example');
-      return /* html */`<ul><li>${module.metadata.name}</li>${examples.map(example => (/* html */`<li><a href="/components/${module.metadata.name}/${camelCaseToKebabCase(example.name)}.html">${camelCaseToKebabCase(example.name)}</a></li>`)).join('')}</ul>`;
+      return /* html */`<ul><li>${module.name}</li>${examples.map(example => (/* html */`<li><a href="/components/${module.name}/${camelCaseToKebabCase(example.name)}.html">${camelCaseToKebabCase(example.name)}</a></li>`)).join('')}</ul>`;
     }).join('')}</nav>`;
 }
 
-function highlightCode(example) {
-  const codeTemplate =  (example.fn instanceof Function ? example.fn() : 'not a function').replace('<template>', '').replace('</template>', '');
-  const codeContent = prettier.format(codeTemplate, { parser: 'html', singleAttributePerLine: false, printWidth: 180, singleQuote: true }).trim();
-  return Prism.highlight(codeContent, Prism.languages.html, 'html');
-}
-
 function apiTemplate(module) {
-  return /* html */`${module.metadata?.elements?.map(e => /* html */`
+  return /* html */`${module?.elements?.map(e => /* html */`
     <h2>${e.tagName}</h2>
     <p>${e.description}</p>
     ${table('Properties', e.members)}

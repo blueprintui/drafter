@@ -12,6 +12,8 @@ import { program } from 'commander';
 import loadConfigFile from 'rollup/loadConfigFile';
 import { rollup, watch } from 'rollup';
 import { getConfig } from './config.js';
+import Prism from 'prismjs';
+import prettier from 'prettier';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,6 +32,7 @@ program
   .action(async (options, command) => {
     process.env.DRAFTER_CONFIG = command.args[0] ? resolve(command.args[0]) : 'false';
     project = await getConfig();
+    project.examples = glob.sync(project.examples);
     buildStatic(options.watch);
     await buildRollup(!options.watch);
     if (options.watch) {
@@ -40,18 +43,15 @@ program
 program.parse();
 
 async function buildStatic(watch) {
-  let elements = [];
-  let schema = { };
-
-  if (project.schema) {
-    schema = fs.readJSONSync(project.schema);
-    elements = schema.modules.flatMap(module => module.declarations).filter(d => d.customElement);
-  }
-
+  const elements = project.schema ? fs.readJSONSync(project.schema).modules.flatMap(module => module.declarations).filter(d => d.customElement) : [];
   const modules = await getModules(elements);
 
   createManager(project, modules);
   createIFrames(project, modules);
+
+  const schemaPath = resolve(project.dist, 'schema.json');
+  fs.createFileSync(schemaPath);
+  fs.writeFileSync(schemaPath, JSON.stringify(modules, null, 2));
 
   if (watch) {
     chokidar.watch(project.examples).on('all', async (event, path) => {
@@ -61,20 +61,25 @@ async function buildStatic(watch) {
 }
 
 function getModules(elements, updatedPath) {
-  const paths = glob.sync(project.examples);
-  const activePaths = updatedPath ? paths.filter(p => p === updatedPath) : paths;
+  const examplePaths = updatedPath ? project.examples.filter(p => p === updatedPath) : project.examples;
 
-  return Promise.all(activePaths.map(async (path) => {
-    console.log(`updating: ${path.replace(resolve(cwd), '')}`);
-
+  return Promise.all(examplePaths.map(async (path) => {
     const module = await import(`${path}?update=${Date.now()}`);
-    const examples = Object.keys(module).filter(k => k !== 'metadata').map(key => ({ fn: module[key], name: key }));
+    const examples = Object.keys(module).filter(k => k !== 'metadata').map(name => {
+      const src = prettier.format(module[name]().replace('<template>', '').replace('</template>', ''), { parser: 'html', singleAttributePerLine: false, printWidth: 180, singleQuote: true }).trim();
+      const formattedSrc = Prism.highlight(src, Prism.languages.html, 'html');
+      return { name, src, formattedSrc };
+    });
 
     if (module.metadata?.elements) {
       module.metadata.elements = module.metadata.elements.map(e => elements.find(i => i.tagName === e)).filter(e => !!e);
     }
 
-    return { examples, path, metadata: module.metadata };
+    return {
+      name: module.metadata.name,
+      elements: module.metadata.elements ?? [],
+      examples
+    };
   }));
 }
 
