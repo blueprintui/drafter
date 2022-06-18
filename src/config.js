@@ -3,11 +3,7 @@ import { resolve } from 'path';
 const cwd = process.cwd();
 
 export async function getConfig() {
-  let userConfig = { };
-
-  if (process.env.DRAFTER_CONFIG !== 'false') {
-    userConfig = await import(process.env.DRAFTER_CONFIG);
-  }
+  let userConfig = await import(process.env.DRAFTER_CONFIG);
 
   const config = {
     dist: './dist/drafter',
@@ -15,7 +11,7 @@ export async function getConfig() {
     examples: '**/element.examples.js',
     aliases: [],
     head: () => '',
-    ...userConfig.default.drafter
+    ...userConfig.default?.drafter
   };
 
   return {

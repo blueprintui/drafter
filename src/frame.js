@@ -1,5 +1,4 @@
-import fs from 'fs-extra';
-import { resolve } from 'path';
+import { path, fs } from 'zx';
 import { camelCaseToKebabCase } from './utils.js';
 
 export function createIFrames(project, modules) {
@@ -7,10 +6,10 @@ export function createIFrames(project, modules) {
 }
 
 function createIframe(project, example, module) {
-  const path = resolve(project.dist, '_site', 'components', module.name, `${camelCaseToKebabCase(example.name)}-iframe.html`);
+  const iframePath = path.resolve(project.dist, '_site', 'components', module.name, `${camelCaseToKebabCase(example.name)}-iframe.html`);
   const template = getIframeTemplate(project, module, example);
-  fs.createFileSync(path);
-  fs.writeFileSync(path, template);
+  fs.createFileSync(iframePath);
+  fs.writeFileSync(iframePath, template);
 }
 
 function getIframeTemplate(project, module, example) {

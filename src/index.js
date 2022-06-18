@@ -1,26 +1,26 @@
 #!/usr/bin/env node
 
-import { dirname, resolve } from 'path';
-import glob from 'glob';
-import { exec as _exec } from 'child_process';
+import { glob, fs, path } from 'zx';
+import { spinner } from 'zx/experimental';
 import { fileURLToPath } from 'url';
-import fs from 'fs-extra';
 import { createIFrames } from './frame.js';
 import { createManager } from './manager.js';
-import chokidar from 'chokidar';
 import { program } from 'commander';
-import loadConfigFile from 'rollup/loadConfigFile';
 import { rollup, watch } from 'rollup';
 import { getConfig } from './config.js';
+import chokidar from 'chokidar';
+import loadConfigFile from 'rollup/loadConfigFile';
 import Prism from 'prismjs';
 import prettier from 'prettier';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ERROR = '\x1b[31m%s\x1b[0m';
-const INFO = '\x1b[36m%s\x1b[0m';
-const SUCCESS = '\x1b[32m%s\x1b[0m';
-const cwd = process.cwd();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const status = {
+  error: '\x1b[31m%s\x1b[0m',
+  warn: '\x1b[33m%s\x1b[0m',
+  info: '\x1b[36m%s\x1b[0m',
+  success: '\x1b[32m%s\x1b[0m'
+};
+
 let project = { };
 
 program
@@ -30,9 +30,9 @@ program
   .option('--prod')
   .description('build library')
   .action(async (options, command) => {
-    process.env.DRAFTER_CONFIG = command.args[0] ? resolve(command.args[0]) : 'false';
+    process.env.DRAFTER_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
     project = await getConfig();
-    project.examples = glob.sync(project.examples);
+    project.examples = glob.globbySync(project.examples);
     buildStatic(options.watch);
     await buildRollup(!options.watch);
     if (options.watch) {
@@ -49,7 +49,7 @@ async function buildStatic(watch) {
   createManager(project, modules);
   createIFrames(project, modules);
 
-  const schemaPath = resolve(project.dist, 'schema.json');
+  const schemaPath = path.resolve(project.dist, 'schema.json');
   fs.createFileSync(schemaPath);
   fs.writeFileSync(schemaPath, JSON.stringify(modules, null, 2));
 
@@ -84,7 +84,7 @@ function getModules(elements, updatedPath) {
 }
 
 function buildRollup(exit) {
-  return loadConfigFile(resolve(__dirname, './rollup.config.mjs'), {}).then(async ({ options, warnings }) => {
+  return loadConfigFile(path.resolve(__dirname, './rollup.config.mjs'), {}).then(async ({ options, warnings }) => {
     return new Promise(async (resolve) => {
       if (warnings.count) {
         console.log(`${warnings.count} warnings`);
@@ -96,16 +96,15 @@ function buildRollup(exit) {
       let bundle;
       let buildFailed = false;
       try {
-        console.log(INFO, 'Building...');
-        bundle = await rollup(options[0]);
+        bundle = await spinner('Building...', async () => await rollup(options[0]));
         await bundle.write(options[0].output[0]);
       } catch (error) {
         buildFailed = true;
-        console.error(ERROR, error);
+        console.error(status.error, error);
       }
       if (bundle) {
         const end = Date.now();
-        console.log(SUCCESS, `Completed in ${(end - start) / 1000} seconds 🎉`);
+        console.log(status.success, `Completed in ${(end - start) / 1000} seconds 🎉`);
         await bundle.close();
         resolve();
       }
@@ -117,7 +116,7 @@ function buildRollup(exit) {
 }
 
 function watchRollup() {
-  loadConfigFile(resolve(__dirname, './rollup-watch.config.mjs'), {}).then(async ({ options }) => {
+  loadConfigFile(path.resolve(__dirname, './rollup-watch.config.mjs'), {}).then(async ({ options }) => {
       const watcher = watch(options[0]);
 
       try {
@@ -128,17 +127,17 @@ function watchRollup() {
 
           switch (event.code) {
             case 'START':
-              console.log(INFO, 'Building...');
+              console.log(status.info, 'Building...');
               break;
             case 'ERROR':
-              console.error(ERROR, event.error);
+              console.error(status.error, event.error);
               event.result.close();
               break;
             case 'WARN':
-              console.error(ERROR, event.error);
+              console.error(status.error, event.error);
               break;
             case 'BUNDLE_END':
-              console.log(SUCCESS, `Complete in ${event.duration / 1000} seconds`);
+              console.log(status.success, `Complete in ${event.duration / 1000} seconds`);
               event.result.close();
               break;
           }
