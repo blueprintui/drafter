@@ -1,7 +1,10 @@
 import fs from 'fs-extra';
 import { resolve } from 'path';
+import showdown from 'showdown';
 import { camelCaseToKebabCase } from './utils.js';
 import { styles } from './manager.styles.js';
+
+const converter = new showdown.Converter();
 
 export function createManager(project, modules) {
   const navTemplate = createNav(modules);
@@ -98,18 +101,18 @@ function createNav(modules) {
 function apiTemplate(module) {
   return /* html */`${module?.elements?.map(e => /* html */`
     <h2>${e.tagName}</h2>
-    <p>${e.description}</p>
-    ${table('Properties', e.members)}
-    ${table('Attributes', e.attributes)}
+    <p>${converter.makeHtml(e.description)}</p>
+    ${table('Properties', e.members?.filter(m => m.privacy !== 'private').filter(m => m.privacy !== 'protected').filter(m => !m.name.startsWith('#')).filter(m => !m.name.startsWith('_')))}
+    ${table('Attributes', e.attributes?.filter(m => !m.name.startsWith('_')))}
     ${table('Events', e.events)}
     ${table('CSS Properties', e.cssProperties)}
-    ${table('Slots', e.slots)}
+    ${table('Slots', e.slots?.map(s => s.name ? s : ({ ...s, name: 'default' })))}
     <br /><br />
   `).join('\n') ?? ''}`
 }
 
 function table(name, rows) {
-  return /* html */`
+  return rows ? /* html */`
     <h3>${name}</h3>
     <table>
       <thead>
@@ -118,5 +121,5 @@ function table(name, rows) {
       <tbody>
       ${rows?.map(m => /* html */`<tr><td>${m.name}</td><td><code>${m.type?.text ?? ''}</code></td><td>${m.description ?? ''}</td></tr>`).join('')}
       </tbody>
-    </table>`;
+    </table>` : '';
 }

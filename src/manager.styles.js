@@ -95,6 +95,8 @@ pre {
   padding: 0;
   overflow: hidden;
   height: fit-content;
+  max-height: 400px;
+  overflow: auto;
   width: 100%;
   padding: 24px;
   margin: 0 0 24px 0;
