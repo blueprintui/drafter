@@ -6,7 +6,7 @@ export function createIFrames(project, modules) {
 }
 
 function createIframe(project, example, module) {
-  const iframePath = path.resolve(project.dist, '_site', 'components', module.name, `${camelCaseToKebabCase(example.name)}-iframe.html`);
+  const iframePath = path.resolve(project.dist, '_site', `${module.name}-${camelCaseToKebabCase(example.name)}-iframe.html`);
   const template = getIframeTemplate(project, module, example);
   fs.createFileSync(iframePath);
   fs.writeFileSync(iframePath, template);
@@ -19,6 +19,7 @@ function getIframeTemplate(project, module, example) {
   <head>
     <title>${module.name} - ${camelCaseToKebabCase(example.name)}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="${project.baseUrl}">
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Ctext%20x='0'%20y='14'%3E🚀3C/text%3E%3C/svg%3E" type="image/svg+xml" />
     ${project.head()}
   </head>

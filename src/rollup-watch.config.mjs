@@ -24,7 +24,6 @@ export default {
       input: './**/*-iframe.html',
       rootDir: `${config.dist}/_site`,
       minify: false,
-      flattenOutput: false,
       extractAssets: false
     }),
     alias({ entries: config.aliases }),

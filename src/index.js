@@ -27,11 +27,11 @@ program
   .command('build')
   .option('--config', 'path for custom config')
   .option('--watch')
-  .option('--prod')
   .description('build library')
   .action(async (options, command) => {
     process.env.DRAFTER_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
     project = await getConfig();
+    project.baseUrl = options.watch ? '/' : project.baseUrl;
     project.examples = glob.globbySync(project.examples);
     buildStatic(options.watch);
     await buildRollup(!options.watch);

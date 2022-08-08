@@ -10,6 +10,7 @@ export async function getConfig() {
     schema: null,
     examples: '**/element.examples.js',
     aliases: [],
+    baseUrl: '/',
     head: () => '',
     ...userConfig.default?.drafter
   };

@@ -24,7 +24,6 @@ export default {
       input: './**/*.html',
       rootDir: `${config.dist}/_site`,
       minify: true,
-      flattenOutput: false,
       extractAssets: false
     }),
     alias({ entries: config.aliases }),
