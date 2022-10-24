@@ -6,28 +6,32 @@ import { styles } from './manager.styles.js';
 
 const converter = new showdown.Converter();
 
-export function createManager(project, modules) {
-  const navTemplate = createNav(modules);
-
-  const indexPath = resolve(project.dist, '_site/index.html');
-  const indexTemplate = getManagerTemplate(project, navTemplate, 'root');
-  fs.createFileSync(indexPath);
-  fs.writeFileSync(indexPath, indexTemplate);
-
-  modules.forEach(module => {
-    module.examples.forEach(example => {
+export function createManager(project, modules) {  
+  const examples = modules.flatMap(module => {
+    return module.examples.flatMap(example => {
       example.name = camelCaseToKebabCase(example.name);
-      const examplePath = resolve(project.dist, '_site', `${module.name}-${example.name}.html`);
-      const exampleTemplate =  getManagerTemplate(project, navTemplate, 'frame', module, example);
-      fs.createFileSync(examplePath);
-      fs.writeFileSync(examplePath, exampleTemplate);
-  
-      const codePath = resolve(project.dist, '_site', `${module.name}-${example.name}-code.html`);
-      const codeTemplate = getManagerTemplate(project, navTemplate, 'code', module, example);
-      fs.createFileSync(codePath);
-      fs.writeFileSync(codePath, codeTemplate);
+      const navTemplate = createNav(modules, `${module.name}-${example.name}.html`);
+
+      return [
+        {
+          path: `${module.name}-${example.name}.html`,
+          template: getManagerTemplate(project, navTemplate, 'frame', module, example)
+        },
+        {
+          path: `${module.name}-${example.name}-code.html`,
+          template: getManagerTemplate(project, navTemplate, 'code', module, example)
+        }
+      ];
     });
   });
+
+  return [
+    {
+      path: 'index.html',
+      template: getManagerTemplate(project, createNav(modules), 'root')
+    },
+    ...examples
+  ];
 }
 
 export function getManagerTemplate(project, navTemplate, type, module, example) {
@@ -92,12 +96,15 @@ function headTemplate() {
     </style>`;
 }
 
-function createNav(modules) {
+function createNav(modules, path = '') {
   return /* html */`<nav class="side-nav">
     ${modules.map(module => {
       const sort = (arr, name) => arr.reduce((acc, m) => m.name.includes(name) ? [m, ...acc] : [...acc, m], []);
       const examples = sort(module.examples, 'example');
-      return /* html */`<ul><li>${module.name}</li>${examples.map(example => (/* html */`<li><a href="${module.name}-${camelCaseToKebabCase(example.name)}.html">${camelCaseToKebabCase(example.name)}</a></li>`)).join('')}</ul>`;
+      return /* html */`<ul><li>${module.name}</li>${examples.map(example => {
+        const href = `${module.name}-${camelCaseToKebabCase(example.name)}.html`;
+        return /* html */`<li ${path === href ? ' selected' : ''}><a href="${href}">${camelCaseToKebabCase(example.name)}</a></li>`
+      }).join('')}</ul>`;
     }).join('')}</nav>`;
 }
 

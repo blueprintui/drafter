@@ -36,7 +36,7 @@ a:hover {
   background: #fafafa;
   overflow: hidden;
   overflow-y: auto;
-  padding: 18px 24px;
+  padding: 18px 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -49,7 +49,6 @@ a:hover {
 
 .side-nav ul {
   display: flex;
-  gap: 6px;
   flex-direction: column;
   margin: 0;
   padding: 0;
@@ -57,7 +56,15 @@ a:hover {
 }
 
 .side-nav li {
-  margin-left: 12px;
+  padding: 8px 24px;
+}
+
+.side-nav li[selected] {
+  background: #ededed;
+}
+
+.side-nav li a {
+  padding-left: 12px;
 }
 
 .side-nav li:first-child {

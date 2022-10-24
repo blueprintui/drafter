@@ -1,15 +1,12 @@
-import { path, fs } from 'zx';
 import { camelCaseToKebabCase } from './utils.js';
 
 export function createIFrames(project, modules) {
-  modules.forEach(module => module.examples.forEach(example => createIframe(project, example, module)));
-}
-
-function createIframe(project, example, module) {
-  const iframePath = path.resolve(project.dist, '_site', `${module.name}-${camelCaseToKebabCase(example.name)}-iframe.html`);
-  const template = getIframeTemplate(project, module, example);
-  fs.createFileSync(iframePath);
-  fs.writeFileSync(iframePath, template);
+  return modules.flatMap(module => module.examples.map(example => {
+    return {
+      path: `${module.name}-${camelCaseToKebabCase(example.name)}-iframe.html`,
+      template: getIframeTemplate(project, module, example)
+    }
+  }));
 }
 
 function getIframeTemplate(project, module, example) {
