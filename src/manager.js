@@ -1,8 +1,7 @@
-import fs from 'fs-extra';
-import { resolve } from 'path';
 import showdown from 'showdown';
 import { camelCaseToKebabCase } from './utils.js';
 import { styles } from './manager.styles.js';
+import Prism from 'prismjs';
 
 const converter = new showdown.Converter();
 
@@ -44,25 +43,23 @@ export function getManagerTemplate(project, navTemplate, type, module, example) 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <base href="${project.baseUrl}">
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Ctext%20x='0'%20y='14'%3E🚀3C/text%3E%3C/svg%3E" type="image/svg+xml" />
-    <link href="https://unpkg.com/prismjs/themes/prism.css" rel="stylesheet" />
   </head>
   <body>
     ${navTemplate}
-    <header>
-      ${type !== 'root' ? /* html */`
-      <nav>
-        <a href="${module.name}-${example.name}.html">Demo 📐</a>
-        <a href="${module.name}-${example.name}-code.html">Code 📘</a>
-        <a href="${module.name}-${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen ↗️</a>
-      </nav>`: ''}
-    </header>
-    <main>
-      ${type === 'frame' ? /* html */`<iframe src="${module.name}-${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log">...</div>` : ''}
-      ${type === 'code' ? /* html */`<pre><code class="language-html">${example.formattedSrc}</code></pre>${apiTemplate(module)}` : ''}
-    </main>
-    <!-- <script type="module">
-      import 'prismjs/themes/prism.min.css';
-    </script> -->
+    <div class="content-panel">
+      <header>
+        ${type !== 'root' ? /* html */`
+        <nav>
+          <a href="${module.name}-${example.name}.html">Demo 📐</a>
+          <a href="${module.name}-${example.name}-code.html">Code 📘</a>
+          <a href="${module.name}-${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen ↗️</a>
+        </nav>`: ''}
+      </header>
+      <main>
+        ${type === 'frame' ? /* html */`<iframe src="${module.name}-${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log">...</div>` : ''}
+        ${type === 'code' ? /* html */`<pre><code class="language-html">${example.formattedSrc}</code></pre>${apiTemplate(module)}` : ''}
+      </main>
+    </div>
     <script type="module">
       const main = document.querySelector('main');
       const actionLog = document.querySelector('.action-log');
@@ -80,7 +77,11 @@ export function getManagerTemplate(project, navTemplate, type, module, example) 
 
       const nav = document.querySelector('.side-nav');
       nav.scrollTop = parseInt(localStorage.getItem('nav-scroll')) ?? 0;
-      window.addEventListener('beforeunload', () => localStorage.setItem('nav-scroll', nav.scrollTop));
+      //nav.style.width = (parseInt(localStorage.getItem('nav-width')) ?? 0) + 'px';
+      window.addEventListener('beforeunload', () => {
+        localStorage.setItem('nav-scroll', nav.scrollTop);
+        // localStorage.setItem('nav-width', nav.getBoundingClientRect().width);
+      });
     </script>
   </body>
 </html>`;
@@ -109,16 +110,19 @@ function createNav(modules, path = '') {
 }
 
 function apiTemplate(module) {
-  return /* html */`${module?.elements?.map(e => /* html */`
-    <h2>${e.tagName}</h2>
-    <p>${converter.makeHtml(e.description)}</p>
-    ${table('Properties', e.members?.filter(m => m.privacy !== 'private').filter(m => m.privacy !== 'protected').filter(m => !m.name.startsWith('#')).filter(m => !m.name.startsWith('_')))}
-    ${table('Attributes', e.attributes?.filter(m => !m.name.startsWith('_')))}
-    ${table('Events', e.events)}
-    ${table('CSS Properties', e.cssProperties)}
-    ${table('Slots', e.slots?.map(s => s.name ? s : ({ ...s, name: 'default' })))}
-    <br /><br />
-  `).join('\n') ?? ''}`
+  
+  return /* html */`${module?.elements?.map(e => {
+    return /* html */`
+      <h2>${e.tagName}</h2>
+      <p>${converter.makeHtml(e.description)}</p>
+      ${table('Properties', e.members?.filter(m => m.privacy !== 'private').filter(m => m.privacy !== 'protected').filter(m => !m.name.startsWith('#')).filter(m => !m.name.startsWith('_')))}
+      ${table('Attributes', e.attributes?.filter(m => !m.name.startsWith('_')))}
+      ${table('Events', e.events)}
+      ${table('CSS Properties', e.cssProperties)}
+      ${table('Slots', e.slots?.map(s => s.name ? s : ({ ...s, name: 'default' })))}
+      <br /><br />
+    `
+  }).join('\n') ?? ''}`
 }
 
 function table(name, rows) {
