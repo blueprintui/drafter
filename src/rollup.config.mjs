@@ -28,8 +28,29 @@ export default ({ watch }) => {
         minify: !watch,
         extractAssets: false
       }),
-      minifyJavaScript(),
-      watch ? browsersync({ server: userConfig.dist }) : null
+      !watch ? minifyJavaScript() : null,
+      watch ? browsersync({
+        server: {
+          baseDir: userConfig.dist,
+          ignore: [`${userConfig.dist}/_site`]
+        },
+        snippetOptions: {
+          rule: {
+            match: /<\/body>/i,
+            fn: function (_snippet, match) {
+              const snippet = `
+              <script id="__bs_script__">
+                if (document.location.pathname.endsWith('iframe.html')) {
+                  const bs_script = document.createElement('script');
+                  bs_script.src = '/browser-sync/browser-sync-client.js?v=2.27.10';
+                  document.body.appendChild(bs_script);
+                }
+              </script>`
+              return snippet + match;
+            }
+          }
+        }
+      }) : null
     ],
     watch: {
       clearScreen: true,

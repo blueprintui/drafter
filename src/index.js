@@ -33,14 +33,17 @@ program
     project = await getConfig();
     project.baseUrl = options.watch ? '/' : project.baseUrl;
     project.examples = glob.globbySync(project.examples);
-    
+    project.elements = project.schema ? fs.readJSONSync(project.schema).modules.flatMap(module => module.declarations).filter(d => d.customElement) : [];
+
+    writeFiles((await buildStatic()).map(file => ({ path: path.resolve(project.dist, '_site', file.path), template: file.template })));
+
     if (options.watch) {
-      chokidar.watch(project.examples).on('all', async () => {
-        writeFiles((await buildStatic()).map(file => ({ path: path.resolve(project.dist, '_site', file.path), template: file.template })));
+      chokidar.watch(project.examples).on('all', async (_event, updatedPath) => {
+        const iframes = createIFrames(project, await getModules(project.examples.filter(p => p === updatedPath)));
+        writeFiles(iframes.map(file => ({ path: path.resolve(project.dist, '_site', file.path), template: file.template })));
       });
     }
 
-    writeFiles((await buildStatic()).map(file => ({ path: path.resolve(project.dist, '_site', file.path), template: file.template })));
     options.watch ? watchRollup() : buildRollup();
   });
 
@@ -121,9 +124,7 @@ function writeFiles(files) {
 }
 
 async function buildStatic() {
-  const elements = project.schema ? fs.readJSONSync(project.schema).modules.flatMap(module => module.declarations).filter(d => d.customElement) : [];
-  const modules = await getModules(elements);
-
+  const modules = await getModules();
   writeFiles([{ path: path.resolve(project.dist, 'schema.json'), template: JSON.stringify(modules, null, 2) }]);
 
   return [
@@ -132,10 +133,8 @@ async function buildStatic() {
   ];
 }
 
-function getModules(elements, updatedPath) {
-  const examplePaths = updatedPath ? project.examples.filter(p => p === updatedPath) : project.examples;
-
-  return Promise.all(examplePaths.map(async (path) => {
+function getModules(examples = project.examples) {
+  return Promise.all(examples.map(async (path) => {
     const module = await import(`${path}?update=${Date.now()}`);
     const examples = Object.keys(module).filter(k => k !== 'metadata').map(name => {
       const src = prettier.format(module[name](), { parser: 'html', singleAttributePerLine: false, printWidth: 180, singleQuote: true }).trim();
@@ -148,7 +147,7 @@ function getModules(elements, updatedPath) {
     });
 
     if (module.metadata?.elements) {
-      module.metadata.elements = module.metadata.elements.map(e => elements.find(i => i.tagName === e)).filter(e => !!e);
+      module.metadata.elements = module.metadata.elements.map(e => project.elements.find(i => i.tagName === e)).filter(e => !!e);
     }
 
     return {
