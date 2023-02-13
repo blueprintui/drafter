@@ -13,6 +13,8 @@ export const styles = /* css */`
   --anchor-color: #2d2d2d;
   --nav-background: #fafafa;
   --nav-color: #2d2d2d;
+  --log-background: #fafafa;
+  --log-color: #2d2d2d;
   --nav-item-selected-background: #ededed;
   --nav-item-selected-color: #2d2d2d;
   --pre-background: #fafafa;
@@ -27,6 +29,8 @@ export const styles = /* css */`
     --anchor-color: #fff;
     --nav-background: #2d2d2d;
     --nav-color: #fff;
+    --log-background: #2d2d2d;
+    --log-color: #fff;
     --nav-item-selected-background: #1f1f1f;
     --nav-item-selected-color: #fff;
     --pre-background: #2d2d2d;
@@ -157,7 +161,8 @@ iframe {
 }
 
 .action-log {
-  border-top: 1px solid var(--border-color);
+  background: var(--log-background);
+  color: var(--log-color);
   height: 200px;
   padding: 12px 24px 24px 24px;
   margin-top: 12px;
@@ -173,7 +178,7 @@ iframe {
 }
 
 .action-log-active iframe {
-  height: calc(100% - 200px);
+  height: calc(100% - 220px);
 }
 
 table {

@@ -56,7 +56,7 @@ export function getManagerTemplate(project, navTemplate, type, module, example) 
         </nav>`: ''}
       </header>
       <main>
-        ${type === 'frame' ? /* html */`<iframe src="${module.name}-${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log">...</div>` : ''}
+        ${type === 'frame' ? /* html */`<iframe src="${module.name}-${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log"></div>` : ''}
         ${type === 'code' ? /* html */`<pre><code class="language-html">${example.formattedSrc}</code></pre>${apiTemplate(module)}` : ''}
       </main>
     </div>
@@ -67,7 +67,7 @@ export function getManagerTemplate(project, navTemplate, type, module, example) 
       broadcastManager.addEventListener('message', message => {
         if (message.data.action === 'log') {
           const div = document.createElement('div');
-          div.textContent = message.data.detail.join(' ');
+          div.textContent = message.data.detail.map(i => JSON.stringify(i, null, 2)).join(' ▶ ');
           actionLog.appendChild(div);
           actionLog.scrollTop = actionLog.scrollHeight;
           main.classList.add('action-log-active');
