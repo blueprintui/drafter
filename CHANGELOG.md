@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0
+- Support Response Headers
+- Optional CommonJS fallback support
+
 ## 0.7.0
 - Improve logging output/format
 - Bump version deps

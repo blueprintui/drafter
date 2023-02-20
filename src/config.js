@@ -12,6 +12,8 @@ export async function getConfig() {
     aliases: [],
     baseUrl: '/',
     head: () => '',
+    responseHeaders: [],
+    commonjs: false,
     ...userConfig.default?.drafter
   };
 

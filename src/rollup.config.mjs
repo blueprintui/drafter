@@ -1,6 +1,7 @@
 import { importAssertions } from 'acorn-import-assertions';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
+import commonjs from '@rollup/plugin-commonjs';
 import { rollupPluginHTML } from '@web/rollup-plugin-html';
 import browsersync from 'rollup-plugin-browsersync';
 import { minifyJavaScript } from './plugin-minify-javascript.mjs';
@@ -21,6 +22,7 @@ export default ({ watch }) => {
     plugins: [
       alias({ entries: userConfig.aliases }),
       nodeResolve(),
+      userConfig.commonjs ? commonjs() : null,
       cssAssert({ minify: !watch }),
       rollupPluginHTML({
         input: `${userConfig.dist}/_site/*.html`,
@@ -32,7 +34,11 @@ export default ({ watch }) => {
       watch ? browsersync({
         server: {
           baseDir: userConfig.dist,
-          ignore: [`${userConfig.dist}/_site`]
+          ignore: [`${userConfig.dist}/_site`],
+          middleware: function (req, res, next) {
+            userConfig.responseHeaders?.forEach(([key, value]) => res.setHeader(key, value));
+            next();
+          }
         },
         snippetOptions: {
           rule: {
