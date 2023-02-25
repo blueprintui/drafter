@@ -1,8 +1,11 @@
 # Changelog
 
+## 0.8.1
+- fix: response header config
+
 ## 0.8.0
-- Support Response Headers
-- Optional CommonJS fallback support
+- feat: support response headers
+- feat: optional commonjs fallback support
 
 ## 0.7.0
 - Improve logging output/format

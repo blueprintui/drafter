@@ -36,7 +36,7 @@ export default ({ watch }) => {
           baseDir: userConfig.dist,
           ignore: [`${userConfig.dist}/_site`],
           middleware: function (req, res, next) {
-            userConfig.responseHeaders?.forEach(([key, value]) => res.setHeader(key, value));
+            Object.keys(userConfig.responseHeaders ?? { }).forEach(key => res.setHeader(key, userConfig.responseHeaders[key]));
             next();
           }
         },
