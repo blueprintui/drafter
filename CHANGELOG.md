@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.2
+- fix: missing rollup dependency
+
 ## 0.8.1
 - fix: response header config
 
