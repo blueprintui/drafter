@@ -13,7 +13,7 @@ const userConfig = await getConfig();
 export default ({ watch }) => {
   return {
     output: {
-      dir: userConfig.dist,
+      dir: `${userConfig.dist}/iframe`,
       sourcemap: false,
       format: 'esm',
       assetFileNames: '[name][extname]'
@@ -25,8 +25,8 @@ export default ({ watch }) => {
       userConfig.commonjs ? commonjs() : null,
       cssAssert({ minify: !watch }),
       rollupPluginHTML({
-        input: `${userConfig.dist}/_site/*.html`,
-        rootDir: `${userConfig.dist}/_site`,
+        input: `${userConfig.dist}/*-iframe.html`,
+        rootDir: `${userConfig.dist}/iframe`,
         minify: !watch,
         extractAssets: false
       }),
@@ -34,7 +34,7 @@ export default ({ watch }) => {
       watch ? browsersync({
         server: {
           baseDir: userConfig.dist,
-          ignore: [`${userConfig.dist}/_site`],
+          ignore: [`${userConfig.dist}/*-iframe.html`],
           middleware: function (req, res, next) {
             Object.keys(userConfig.responseHeaders ?? { }).forEach(key => res.setHeader(key, userConfig.responseHeaders[key]));
             next();

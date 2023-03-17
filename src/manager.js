@@ -52,11 +52,11 @@ export function getManagerTemplate(project, navTemplate, type, module, example) 
         <nav>
           <a href="${module.name}-${example.name}.html">Demo 📐</a>
           <a href="${module.name}-${example.name}-code.html">Code 📘</a>
-          <a href="${module.name}-${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen ↗️</a>
+          <a href="iframe/${module.name}-${example.name}-iframe.html" target="_blank" class="full-screen">Full Screen ↗️</a>
         </nav>`: ''}
       </header>
       <main>
-        ${type === 'frame' ? /* html */`<iframe src="${module.name}-${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log"></div>` : ''}
+        ${type === 'frame' ? /* html */`<iframe src="iframe/${module.name}-${example.name}-iframe.html" title="${example.name} demo" loading="lazy" frameBorder="0"></iframe><div class="action-log"></div>` : ''}
         ${type === 'code' ? /* html */`<pre><code class="language-html">${example.formattedSrc}</code></pre>${apiTemplate(module)}` : ''}
       </main>
     </div>

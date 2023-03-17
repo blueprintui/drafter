@@ -31,16 +31,16 @@ program
   .action(async (options, command) => {
     process.env.DRAFTER_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');
     project = await getConfig();
-    project.baseUrl = options.watch ? '/' : project.baseUrl;
+    project.baseUrl = !options.watch ? project.baseUrl : null;
     project.examples = glob.globbySync(project.examples);
     project.elements = project.schema ? fs.readJSONSync(project.schema).modules.flatMap(module => module.declarations).filter(d => d.customElement) : [];
 
-    writeFiles((await buildStatic()).map(file => ({ path: path.resolve(project.dist, '_site', file.path), template: file.template })));
+    writeFiles((await buildStatic()).map(file => ({ path: path.resolve(project.dist, file.path), template: file.template })));
 
     if (options.watch) {
       chokidar.watch(project.examples).on('all', async (_event, updatedPath) => {
         const iframes = createIFrames(project, await getModules(project.examples.filter(p => p === updatedPath)));
-        writeFiles(iframes.map(file => ({ path: path.resolve(project.dist, '_site', file.path), template: file.template })));
+        writeFiles(iframes.map(file => ({ path: path.resolve(project.dist, file.path), template: file.template })));
       });
     }
 
