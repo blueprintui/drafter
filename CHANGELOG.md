@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.4
+- chore: bump version deps
+
 ## 0.8.3
 - fix: performance improvements for watch mode iframes
 
