@@ -1,5 +1,8 @@
 # Changelog
 
+### 0.9.0
+- feat: support CSS attribute imports
+
 ## 0.8.4
 - chore: bump version deps
 

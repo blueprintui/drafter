@@ -1,11 +1,11 @@
-import { importAssertions } from 'acorn-import-assertions';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import { rollupPluginHTML } from '@web/rollup-plugin-html';
 import browsersync from 'rollup-plugin-browsersync';
+import { css } from './plugin-minify-css.mjs';
 import { minifyJavaScript } from './plugin-minify-javascript.mjs';
-import { cssAssert } from './plugin-css-assert.mjs';
+
 import { getConfig } from './config.js';
 
 const userConfig = await getConfig();
@@ -18,12 +18,10 @@ export default ({ watch }) => {
       format: 'esm',
       assetFileNames: '[name][extname]'
     },
-    acornInjectPlugins: [importAssertions],
     plugins: [
       alias({ entries: userConfig.aliases }),
+      css({ minify: !watch }),
       nodeResolve(),
-      userConfig.commonjs ? commonjs() : null,
-      cssAssert({ minify: !watch }),
       rollupPluginHTML({
         input: `${userConfig.dist}/*-iframe.html`,
         rootDir: `${userConfig.dist}/iframe`,

@@ -1,7 +1,6 @@
 import showdown from 'showdown';
 import { camelCaseToKebabCase } from './utils.js';
 import { styles } from './manager.styles.js';
-import Prism from 'prismjs';
 
 const converter = new showdown.Converter();
 

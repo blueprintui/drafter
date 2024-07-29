@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import { glob, fs, path } from 'zx';
-import { spinner } from 'zx/experimental';
+import { glob, fs, path, spinner } from 'zx';
 import { fileURLToPath } from 'url';
 import { createIFrames } from './frame.js';
 import { createManager } from './manager.js';
@@ -87,9 +86,9 @@ function watchRollup() {
 
     try {
       watcher.on('event', (event) => {
-        if (event.result) {
-          event.result.watchFiles = null;
-        }
+        // if (event.result) {
+        //   event.result.watchFiles = null;
+        // }
 
         switch (event.code) {
           case 'START':
