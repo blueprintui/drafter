@@ -1,9 +1,13 @@
 {
   "name": "@blueprintui/drafter",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "",
   "main": "index.js",
   "type": "module",
+  "packageManager": "pnpm@9.12.3",
+  "engines": {
+    "node": "22.11.0"
+  },
   "bin": {
     "drafter": "./src/index.js"
   },
@@ -17,24 +21,24 @@
   "author": "Cory Rylan",
   "license": "MIT",
   "dependencies": {
-    "@rollup/plugin-alias": "5.1.0",
-    "@rollup/plugin-commonjs": "26.0.1",
-    "@rollup/plugin-node-resolve": "15.2.3",
+    "@rollup/plugin-alias": "5.1.1",
+    "@rollup/plugin-commonjs": "28.0.1",
+    "@rollup/plugin-node-resolve": "15.3.0",
     "@web/rollup-plugin-html": "2.3.0",
-    "browserslist": "4.23.2",
-    "chokidar": "3.6.0",
+    "browserslist": "4.24.2",
+    "chokidar": "4.0.1",
     "commander": "12.1.0",
     "fs-extra": "11.2.0",
-    "glob": "10.4.1",
-    "lightningcss": "1.25.1",
+    "glob": "11.0.0",
+    "lightningcss": "1.28.1",
     "minify-html-literals": "1.3.5",
     "prettier": "2.8.7",
     "prismjs": "1.29.0",
-    "rollup": "4.19.0",
+    "rollup": "4.25.0",
     "rollup-plugin-browsersync": "1.3.3",
     "rollup-plugin-copy": "3.5.0",
     "showdown": "2.1.0",
-    "terser": "5.31.3",
-    "zx": "8.1.4"
+    "terser": "5.36.0",
+    "zx": "8.2.1"
   }
 }
