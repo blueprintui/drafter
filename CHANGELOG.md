@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.3
+- chore: bump version deps
+
 ## 0.9.1
 - chore: bump version deps
 

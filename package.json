@@ -1,44 +1,51 @@
 {
   "name": "@blueprintui/drafter",
-  "version": "0.9.1",
+  "version": "0.9.3",
   "description": "",
   "main": "index.js",
   "type": "module",
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@10.11.0",
   "engines": {
     "node": "22.11.0"
   },
   "bin": {
-    "drafter": "./src/index.js"
+    "drafter": "src/index.js"
   },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "ci": "npm run clean && npm run build",
     "start": "npm run clean && node ./src/index.js build && node ./src/index.js build --watch",
     "build": "node ./src/index.js build",
-    "publish": "npm publish --access public",
+    "deploy": "npm publish --access public",
     "clean": "rm -rf ./dist"
   },
   "author": "Cory Rylan",
   "license": "MIT",
   "dependencies": {
     "@rollup/plugin-alias": "5.1.1",
-    "@rollup/plugin-commonjs": "28.0.1",
-    "@rollup/plugin-node-resolve": "15.3.0",
+    "@rollup/plugin-commonjs": "28.0.3",
+    "@rollup/plugin-node-resolve": "16.0.1",
     "@web/rollup-plugin-html": "2.3.0",
-    "browserslist": "4.24.2",
-    "chokidar": "4.0.1",
-    "commander": "12.1.0",
-    "fs-extra": "11.2.0",
-    "glob": "11.0.0",
-    "lightningcss": "1.28.1",
+    "browserslist": "4.24.5",
+    "chokidar": "4.0.3",
+    "commander": "13.1.0",
+    "fs-extra": "11.3.0",
+    "glob": "11.0.2",
+    "lightningcss": "1.30.1",
     "minify-html-literals": "1.3.5",
     "prettier": "2.8.7",
     "prismjs": "1.29.0",
-    "rollup": "4.25.0",
+    "rollup": "4.40.2",
     "rollup-plugin-browsersync": "1.3.3",
     "rollup-plugin-copy": "3.5.0",
     "showdown": "2.1.0",
-    "terser": "5.36.0",
-    "zx": "8.2.1"
+    "terser": "5.39.2",
+    "zx": "8.5.4"
   }
 }

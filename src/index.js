@@ -26,6 +26,7 @@ program
   .command('build')
   .option('--config', 'path for custom config')
   .option('--watch')
+  .allowExcessArguments()
   .description('build library')
   .action(async (options, command) => {
     process.env.DRAFTER_CONFIG = command.args[0] ? path.resolve(command.args[0]) : path.resolve('./blueprint.config.js');

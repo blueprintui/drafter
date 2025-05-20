@@ -1,6 +1,5 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
-import commonjs from '@rollup/plugin-commonjs';
 import { rollupPluginHTML } from '@web/rollup-plugin-html';
 import browsersync from 'rollup-plugin-browsersync';
 import { css } from './plugin-minify-css.mjs';
