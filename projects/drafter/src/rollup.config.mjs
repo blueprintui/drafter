@@ -2,8 +2,8 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
 import { rollupPluginHTML } from '@web/rollup-plugin-html';
 import browsersync from 'rollup-plugin-browsersync';
-import { css } from './plugin-minify-css.mjs';
-import { minifyJavaScript } from './plugin-minify-javascript.mjs';
+import { css } from './rollup.plugin-minify-css.mjs';
+import { minifyJavaScript } from './rollup.plugin-minify-javascript.mjs';
 
 import { getConfig } from './config.js';
 

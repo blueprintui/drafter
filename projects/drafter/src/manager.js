@@ -32,7 +32,7 @@ export function createManager(project, modules) {
   ];
 }
 
-export function getManagerTemplate(project, navTemplate, type, module, example) {
+function getManagerTemplate(project, navTemplate, type, module, example) {
   return /* html */`
 <!doctype html>
 <html lang="en">

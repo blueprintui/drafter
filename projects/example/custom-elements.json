@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "/badge/element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "```typescript\nimport '@blueprintui/components/include/badge.js';\n```\n\n```html\n<bp-badge status=\"warning\">2</bp-badge>\n```",
+          "name": "BpBadge",
+          "cssProperties": [
+            {
+              "name": "--background"
+            },
+            {
+              "name": "--color"
+            },
+            {
+              "name": "--font-size"
+            },
+            {
+              "name": "--width"
+            },
+            {
+              "name": "--height"
+            },
+            {
+              "name": "--min-width"
+            },
+            {
+              "name": "--min-height"
+            },
+            {
+              "name": "--border-radius"
+            },
+            {
+              "name": "--padding"
+            }
+          ],
+          "slots": [
+            {
+              "description": "badge content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "status",
+              "type": {
+                "text": "'accent' | 'success' | 'warning' | 'danger'"
+              },
+              "description": "determine the visual status state",
+              "attribute": "status",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "_internals",
+              "type": {
+                "text": "ElementInternals"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "status",
+              "type": {
+                "text": "'accent' | 'success' | 'warning' | 'danger'"
+              },
+              "description": "determine the visual status state",
+              "fieldName": "status"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "bp-badge",
+          "customElement": true,
+          "summary": "The badge component is used to display a small amount of information, such as a count or status, in a compact and visually distinct way. It is often used to display notifications or unread messages.",
+          "metadata": {
+            "since": "1.0.0",
+            "docs": "https://blueprintui.dev/docs/components/badge"
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "BpBadge",
+          "declaration": {
+            "name": "BpBadge",
+            "module": "/badge/element.js"
+          }
+        }
+      ]
+    }
+  ]
+}
