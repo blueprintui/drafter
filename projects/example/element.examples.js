@@ -3,6 +3,7 @@ export const metadata = {
   elements: ['ui-badge']
 };
 
+/** @summary Badge examples showing all available status variants */
 export function example() {
   return /* html */`
     <div bp-layout="inline gap:xs">
@@ -15,6 +16,7 @@ export function example() {
     `;
 }
 
+/** @summary Badge with numeric content in different status variants */
 export function number() {
   return /* html */`
     <div bp-layout="inline gap:xs">
@@ -27,6 +29,7 @@ export function number() {
     `;
 }
 
+/** @summary Badge displaying version numbers across all status variants */
 export function longForm() {
   return /* html */`
     <div bp-layout="inline gap:xs">

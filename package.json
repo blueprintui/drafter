@@ -5,8 +5,10 @@
   "type": "module",
   "packageManager": "pnpm@10.14.0",
   "scripts": {
-    "ci": "cd projects/example && pnpm run ci",
+    "ci": "pnpm run build:example && pnpm run test",
+    "test": "node --test tests/*.test.js",
     "setup": "pnpm run clean && pnpm install && pnpm run ci",
+    "build:example": "cd projects/example && pnpm run build",
     "clean": "git clean -dfX"
   },
   "devDependencies": {

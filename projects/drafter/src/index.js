@@ -35,12 +35,12 @@ program
     project.examples = glob.globbySync(project.examples);
     project.elements = project.schema ? fs.readJSONSync(project.schema).modules.flatMap(module => module.declarations).filter(d => d.customElement) : [];
 
-    writeFiles((await buildStatic()).map(file => ({ path: path.resolve(project.dist, file.path), template: file.template })));
+    await writeFiles((await buildStatic()).map(file => ({ path: path.resolve(project.dist, file.path), template: file.template })));
 
     if (options.watch) {
       chokidar.watch(project.examples).on('all', async (_event, updatedPath) => {
         const iframes = createIFrames(project, await getModules(project.examples.filter(p => p === updatedPath)));
-        writeFiles(iframes.map(file => ({ path: path.resolve(project.dist, file.path), template: file.template })));
+        await writeFiles(iframes.map(file => ({ path: path.resolve(project.dist, file.path), template: file.template })));
       });
     }
 
@@ -116,16 +116,16 @@ function watchRollup() {
   });
 }
 
-function writeFiles(files) {
-  files.flat(files).forEach(async (file) => {
+async function writeFiles(files) {
+  await Promise.all(files.flat(files).map(async (file) => {
     await fs.createFile(file.path);
     await fs.writeFile(file.path, file.template);
-  });
+  }));
 }
 
 async function buildStatic() {
   const modules = await getModules();
-  writeFiles([{ path: path.resolve(project.dist, 'schema.json'), template: JSON.stringify(modules, null, 2) }]);
+  await writeFiles([{ path: path.resolve(project.dist, 'schema.json'), template: JSON.stringify(modules, null, 2) }]);
 
   return [
     ...createManager(project, modules),
@@ -133,17 +133,46 @@ async function buildStatic() {
   ];
 }
 
+function extractJSDocSummary(sourceCode, functionName) {
+  // Match JSDoc comment followed by export function with the given name
+  const jsDocPattern = new RegExp(
+    `/\\*\\*([^*]|\\*(?!/))*\\*/\\s*export\\s+function\\s+${functionName}\\s*\\(`,
+    's'
+  );
+
+  const match = sourceCode.match(jsDocPattern);
+  if (!match) {
+    return undefined;
+  }
+
+  const jsDocComment = match[0];
+  // Match @summary followed by content, stopping at newline, */ or end of string
+  const summaryMatch = jsDocComment.match(/@summary\s+(.+?)(?:\s*\*\/|\n|$)/);
+
+  return summaryMatch ? summaryMatch[1].trim() : undefined;
+}
+
 function getModules(examples = project.examples) {
-  return Promise.all(examples.map(async (path) => {
-    const module = await import(`${path}?update=${Date.now()}`);
+  return Promise.all(examples.map(async (examplePath) => {
+    const module = await import(`${examplePath}?update=${Date.now()}`);
+    const sourceCode = await fs.readFile(examplePath, 'utf-8');
+
     const examples = Object.keys(module).filter(k => k !== 'metadata').map(name => {
       const src = prettier.format(module[name](), { parser: 'html', singleAttributePerLine: false, printWidth: 180, singleQuote: true }).trim();
       const formattedSrc = Prism.highlight(src, Prism.languages.html, 'html');
-      return {
+      const summary = extractJSDocSummary(sourceCode, name);
+
+      const example = {
         name: name.replace(/[A-Z]/g, l => `-${l.toLowerCase()}`),
         src,
         formattedSrc
       };
+
+      if (summary !== undefined) {
+        example.summary = summary;
+      }
+
+      return example;
     });
 
     if (module.metadata?.elements) {

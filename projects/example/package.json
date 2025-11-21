@@ -7,7 +7,7 @@
   "scripts": {
     "ci": "pnpm run clean && pnpm run build",
     "start": "drafter build --watch",
-    "build": "pnpm run clean && drafter build",
+    "build": "drafter build",
     "clean": "rm -rf ./drafter"
   },
   "devDependencies": {
