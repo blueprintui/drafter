@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.0
+- feat: example summary support
+
 ## 0.9.4
 - chore: bump version deps
 
